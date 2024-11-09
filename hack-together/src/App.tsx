@@ -21,6 +21,7 @@ export default function App() {
         <button onClick={() => set_count((count) => count + 1) }>Synq'd count is {count}</button> 
         {/* <button onClick={() => set_count((count) => count + 1)}>Synq'd count is {count}</button> */}
         <button {...{ style: { marginLeft: '1rem' }, onClick: () => set_count(0) }}>Reset</button>
+        <button {...{ style: { marginLeft: '1rem' }, onClick: () => set_count(100) }}>Add 100</button>
       </div>
       <p className='read-the-docs'>Click on the respective logos to learn more.</p>
 
