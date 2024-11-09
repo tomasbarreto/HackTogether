@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Paintbrush, Eraser, Trash2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Slider } from '@/components/ui/slider'
-import { cn } from '@/lib/utils'
+import { Button } from '../components/ui/button'
+import { Slider } from '../components/ui/slider'
+import { cn } from '../lib/utils'
 
 export function WhiteboardComponent() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
