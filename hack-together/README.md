@@ -1,4 +1,4 @@
-# HackTogether Project Template _
+# HackTogether Project Template __
 
 Welcome to the HackTogether hackathon! This template project is designed to give you a quick start with ReactTogether, Vite, and TypeScript.
 
