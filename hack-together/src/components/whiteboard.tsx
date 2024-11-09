@@ -5,6 +5,9 @@ import { Slider } from '../components/ui/slider';
 import { cn } from '../lib/utils';
 import { useStateTogether } from 'react-together';
 
+import { SidebarProvider, SidebarTrigger } from "./ui/sidebar"
+import { AppSidebar } from "../components/AppSidebar"
+
 interface Point {
   x: number;
   y: number;
@@ -94,45 +97,53 @@ export function WhiteboardComponent() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4 p-4 bg-gray-100 rounded-lg">
-      <div className="flex space-x-4 mb-4">
-        <input
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          className="w-10 h-10 border-none"
-        />
-        <Button onClick={toggleEraser} variant={isEraser ? 'secondary' : 'outline'} size="icon">
-          <Eraser className="h-4 w-4" />
-        </Button>
-        <Button onClick={clearCanvas} variant="outline" size="icon">
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-      <div className="flex items-center space-x-4 mb-4">
-        <Paintbrush className="h-4 w-4" />
-        <Slider
-          value={[brushSize]}
-          onValueChange={(value) => setBrushSize(value[0])}
-          max={20}
-          step={1}
-          className="w-[200px]"
-        />
-        <span className="text-sm font-medium">{brushSize}px</span>
-      </div>
-      <canvas
-        ref={canvasRef}
-        width={800}
-        height={600}
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseOut={stopDrawing}
-        className={cn(
-          "border border-gray-300 rounded-lg cursor-crosshair",
-          isEraser && "cursor-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABVSURBVDhPY2AYBcMNMEJpnODJ/9uOIHEGJgZGRpCYAQ7FWABIjgkqhBNgU4gPYFOMrpAQwKYYWRFegCGJTSFWgE0xukKCgBhFGIpwKcYKhq9CAPmwFalzTqm6AAAAAElFTkSuQmCC'),auto]"
-        )}
-      />
-    </div>
+    <>
+      <SidebarProvider>
+        <AppSidebar />
+        <main>
+          <SidebarTrigger className="flex flex-col items-left mb-5" />
+          <div className="flex flex-col w-full items-center space-y-4 p-4 bg-gray-100 rounded-lg">
+            <div className="flex items-center space-x-4 mb-4">
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="w-10 h-10 border-none"
+              />
+              <Button onClick={toggleEraser} variant={isEraser ? 'secondary' : 'outline'} size="icon">
+                <Eraser className="h-4 w-4" />
+              </Button>
+              <Button onClick={clearCanvas} variant="outline" size="icon">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex items-center space-x-4 mb-4">
+              <Paintbrush className="h-4 w-4" />
+              <Slider
+                value={[brushSize]}
+                onValueChange={(value) => setBrushSize(value[0])}
+                max={20}
+                step={1}
+                className="w-[200px]"
+              />
+              <span className="text-sm font-medium">{brushSize}px</span>
+            </div>
+            <canvas
+              ref={canvasRef}
+              width={800}
+              height={600}
+              onMouseDown={startDrawing}
+              onMouseMove={draw}
+              onMouseUp={stopDrawing}
+              onMouseOut={stopDrawing}
+              className={cn(
+                "border border-gray-300 rounded-lg cursor-crosshair",
+                isEraser && "cursor-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABVSURBVDhPY2AYBcMNMEJpnODJ/9uOIHEGJgZGRpCYAQ7FWABIjgkqhBNgU4gPYFOMrpAQwKYYWRFegCGJTSFWgE0xukKCgBhFGIpwKcYKhq9CAPmwFalzTqm6AAAAAElFTkSuQmCC'),auto]"
+              )}
+            />
+          </div>
+        </main>
+      </SidebarProvider>
+    </>
   );
 }
