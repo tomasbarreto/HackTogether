@@ -1,50 +1,77 @@
-# React + TypeScript + Vite
+# HackTogether Project Template
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to the HackTogether hackathon! This template project is designed to give you a quick start with ReactTogether, Vite, and TypeScript.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Follow these steps to set up your project:
 
-## Expanding the ESLint configuration
+### 1. Fork this repository and clone it to your development environment
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Stuck here? Check out this GitHub guide: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo
 
-- Configure the top-level `parserOptions` property like this:
+### 2. Install dependencies:
+In your terminal, make sure you have `npm` installed.
+Then, go to your repo directory and run:
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm i
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 3. Get your Multisynq API Key:
+- Go to [https://multisynq.io/account](https://multisynq.io/account)
+- Register for a free account and obtain your API Key
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### 4. Configure your Multisynq credentials:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+- Create a `.env` file (you can copy from `example.env`)
+```bash
+cp .env.example .env
 ```
+
+- Replace the placeholders with your actual credentials:
+```
+VITE_APP_ID=dev.reacttogether.your-app-name
+VITE_API_KEY= # <-- Insert your Multisynq API key
+VITE_SESSION_NAME="Any session name you want"
+VITE_SESSION_NAME="Any password you want!"
+```
+
+### 5. Start the development server:
+
+In your terminal, run
+```bash
+npm run dev
+```
+
+### 6. Deploy your project to Cloudflare Pages
+
+Now you just need to deploy your website to be publicly available. It's possible to do that on Cloudflare Pages!! It's easy to configure and it's free!!
+Cloudflare already has a guide on how to deploy a vite project on Cloudflare Pages.
+The following steps are adapted from their official guide, which can be found at: https://developers.cloudflare.com/pages/framework-guides/deploy-a-vite3-project/
+
+To deploy your site to Cloudflare Pages:
+
+ * Log in to the [Cloudflare dashboard](https://dash.cloudflare.com/) and select your account.
+ * In Account Home, select *Workers & Pages* > *Create application* > *Pages* > *Connect to Git*.
+ * Select your GitHub repository.
+ * In the Set up builds and deployments, set `npm run build` as the *Build command*, and `dist` as the *Build output directory*.
+ * After completing configuration, select *Save and Deploy*.
+
+You will see your first deploy pipeline in progress.
+Pages installs all dependencies and builds the project as specified.
+After you have deployed your project, it will be available at the `<YOUR_PROJECT_NAME>.pages.dev` subdomain.
+Find your project’s subdomain in *Workers & Pages* > select your Pages project > *Deployments*.
+
+Cloudflare Pages will automatically rebuild your project and deploy it on every new pushed commit.
+
+Additionally, you will have access to preview deployments, which repeat the build-and-deploy process for pull requests.
+With these, you can preview changes to your project with a real URL before deploying them to production.
+
+### Have fun and HackTogether!
+
+  - Check out the [ReactTogether documentation](https://reacttogether.com/) to learn about its features and uses.
+
+---
+### Need Help?
+If you have any questions or run into issues, don't hesitate to reach out to the hackathon organizers or check the official documentation for the tools used in this template.
