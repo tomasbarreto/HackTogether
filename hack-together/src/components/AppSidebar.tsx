@@ -12,13 +12,15 @@ import {
   } from "../components/ui/sidebar"
 
   import { Role, User } from "../Schemas/Schemas"
+
+  import { ClipboardCopy } from 'lucide-react';
   
   interface SidebarProps {
     users: User[];
     roomId: number
   }
 
-  const tempUsers : User[] = [
+  /*const tempUsers : User[] = [
     {
         id: 1,
         username: "Tomas",
@@ -49,9 +51,10 @@ import {
         username: "Alberto",
         role: Role.Professor
     }
-  ]
+  ]*/
 
   export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId }) => {
+    console.log(users.length)
     return (
       <Sidebar>
         <SidebarHeader />
@@ -60,7 +63,7 @@ import {
             <SidebarGroupLabel>Students</SidebarGroupLabel>
             <SidebarGroupContent>
                 <SidebarMenu>
-                    {tempUsers.length != 0 ? tempUsers.map((user) => (
+                    {users.length != 0 ? users.map((user) => (
                         user.role === Role.Student ? 
                         <SidebarMenuItem key={user.id}>
                             <SidebarMenuButton asChild> 
@@ -85,9 +88,12 @@ import {
                     <SidebarMenu>
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild onClick={ async () => {
-                                    await navigator.clipboard.writeText("31231231")
+                                    await navigator.clipboard.writeText(roomId.toString())
                                 }}> 
-                                    <span>31231231</span> 
+                                    <div className="flex justify-between">
+                                        <span>31231231</span> 
+                                        <ClipboardCopy />
+                                    </div>
                                 </SidebarMenuButton> 
                             </SidebarMenuItem>
                     </SidebarMenu>
@@ -97,8 +103,4 @@ import {
       </Sidebar>
     )
   }
-
-  
-  
-  
   

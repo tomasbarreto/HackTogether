@@ -8,6 +8,8 @@ import { useStateTogether } from 'react-together';
 import { SidebarProvider, SidebarTrigger } from "./ui/sidebar"
 import { AppSidebar } from "../components/AppSidebar"
 
+import { User } from "../Schemas/Schemas"
+
 interface Point {
   x: number;
   y: number;
@@ -19,7 +21,12 @@ interface Path {
   points: Point[];
 }
 
-export function WhiteboardComponent() {
+interface WhiteboardProps {
+  users: User[];
+  roomId: number;
+}
+
+export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState('#000000');
@@ -99,7 +106,7 @@ export function WhiteboardComponent() {
   return (
     <>
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar users={users} roomId={roomId} />
         <main>
           <SidebarTrigger className="flex flex-col items-left mb-5" />
           <div className="flex flex-col w-full items-center space-y-4 p-4 bg-gray-100 rounded-lg">
