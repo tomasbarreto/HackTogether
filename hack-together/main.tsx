@@ -8,12 +8,10 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ReactTogether
       sessionParams={{
-        appId: import.meta.env['dev.reacttogether.hacktogetherapp'],
-        apiKey: import.meta.env['2F0ycxv7oTQKzT9TFUcIgydcSdMacginczP0KSlc7oY'],
-        // Having the two args below will make React Together immediately connect
-        // to a new session. Remove them if you want users to start "offline"
-        name: import.meta.env['hacktogethersession'],
-        password: import.meta.env['Pass123!'],
+        appId: import.meta.env.VITE_APP_ID,
+        apiKey: import.meta.env.VITE_API_KEY,
+        name: import.meta.env.VITE_SESSION_NAME,
+        password: import.meta.env.VITE_SESSION_PASSWORD,
       }}
     >
       <App />
