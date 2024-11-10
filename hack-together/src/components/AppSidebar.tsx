@@ -14,13 +14,11 @@ import { Role, User } from "../Schemas/Schemas"
 import { ClipboardCopy } from 'lucide-react'
 import { useToast } from "../hooks/use-toast"
 import { Button } from "./ui/button"
-
+import { Input } from "./ui/input"
 import { useEffect, useState } from "react"
-import { useState, useRef, useCallback } from "react"
-
 import { Trash2 } from 'lucide-react';
-
 import { Progress } from "../components/ui/progress"
+import { Label } from "../components/ui/label"
 
 import {
   Dialog,
@@ -34,9 +32,11 @@ import {
 
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
 
+import { useStateTogether } from "react-together"
+
 interface SidebarProps {
   users: User[]
-  roomId: String
+  roomId: string
   currentUserId: string
 }
 
