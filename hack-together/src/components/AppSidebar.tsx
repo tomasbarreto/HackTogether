@@ -15,9 +15,12 @@ import { ClipboardCopy } from 'lucide-react'
 import { useToast } from "../hooks/use-toast"
 import { Button } from "./ui/button"
 
+import { useEffect, useState } from "react"
 import { useState, useRef, useCallback } from "react"
 
 import { Trash2 } from 'lucide-react';
+
+import { Progress } from "../components/ui/progress"
 
 import {
   Dialog,
@@ -29,6 +32,8 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
+
 interface SidebarProps {
   users: User[]
   roomId: String
@@ -37,12 +42,62 @@ interface SidebarProps {
 
 export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserId }) => {
 
+  const [progress, setProgress] = useState(0);  // Initialize progress state
+
+  useEffect(() => {
+    // Set an interval to increment the progress every 300ms
+    const interval = setInterval(() => {
+      setProgress(prevProgress => {
+        if (prevProgress >= 100) {
+          clearInterval(interval);  // Clear the interval when it reaches 100
+          return 100;
+        }
+        return prevProgress + 1;  // Increment progress
+      });
+    }, 300);  // Set the interval to 300ms for smoother progress (adjust as needed)
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, []); 
+
   useEffect(() => {
     setQuestion(['']);
     setAnswers(['']);
   }, [roomId]);
 
+  const [showDoubtsToast, setShowDoubtsToast] = useStateTogether('showDoubtsToast', false);
+
+  const handleAskForDoubts = () => {
+    // Only trigger for students
+    if (currUser?.role === Role.Teacher) {
+      setShowDoubtsToast(true);
+    }
+  };
+
   const currUser = users.find(user => user.id === currentUserId);
+  const { toast } = useToast()
+
+  useEffect(() => {
+    // Only show toast if current user is a student and `showDoubtsToast` is true
+    if (currUser?.role === Role.Student && showDoubtsToast) {
+      toast({
+        description: "Any Doubts?",
+        action: (
+          <>
+            <div className="flex flex-col">
+              <div className="flex flex-row">
+                <Button className="bg-green-900">Yes</Button>
+              </div>
+              <Progress value={progress} className="w-[150%]" />
+            </div>
+          </>
+        ),
+        duration: 30000
+      });
+      // Reset state after displaying toast
+      setShowDoubtsToast(false);
+    }
+  }, [showDoubtsToast, currUser, toast, setShowDoubtsToast]);
 
   const [answers, setAnswers] = useStateTogether('answers', ['']);
   const [question, setQuestion] = useStateTogether('question', ['']);
@@ -74,8 +129,6 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
     setQuestion(question);  // Updates shared question
     setAnswers(answers);    // Updates shared answers
   };
-
-  const { toast } = useToast()
   
   console.log(users.length)
 
@@ -174,7 +227,7 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                          <DialogTitle>Create Question Pool</DialogTitle>
+                          <DialogTitle>Create Question Poll</DialogTitle>
                           <DialogDescription>
                             Type your question and possible answers. Click save when you're done.
                           </DialogDescription>
@@ -226,44 +279,9 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
                 </SidebarMenuItem>  
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="w-48">Ask for Doubts</Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Create Question Pool</DialogTitle>
-                        <DialogDescription>
-                          Make changes to your profile here. Click save when you're done.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="name" className="text-right">
-                            Name
-                          </Label>
-                          <Input
-                            id="name"
-                            defaultValue="Pedro Duarte"
-                            className="col-span-3"
-                          />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="username" className="text-right">
-                            Username
-                          </Label>
-                          <Input
-                            id="username"
-                            defaultValue="@peduarte"
-                            className="col-span-3"
-                          />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button type="submit">Save changes</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                      <Button className="w-48" onClick={handleAskForDoubts}>
+                        Ask for Doubts
+                        </Button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>  
               </SidebarMenu>
@@ -281,11 +299,17 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
             </DialogHeader>
             
             {/* Display all possible answers */}
-            {answers.map((answer, index) => (
-              <div key={index} className="py-2">
-                <span>{answer}</span>
+            
+              <div className="py-2">
+                <RadioGroup defaultValue="comfortable">
+                {answers.map((answer, index) => (
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value={answer} id={index.toString()} />
+                    <Label htmlFor={index.toString()}>{answer}</Label>
+                  </div>
+                  ))}
+                </RadioGroup>
               </div>
-            ))}
             
             <DialogFooter>
               <Button onClick={() => {/* Submit student's answer logic */}}>Submit Answer</Button>
