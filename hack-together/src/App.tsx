@@ -2,7 +2,6 @@ import './App.css';
 import { WhiteboardComponent } from './components/whiteboard';
 import { User, Role } from "./Schemas/Schemas"
 import { useStateTogether } from 'react-together'
-import { Button } from './components/ui/button';
 
 function App() {
   const [users, setUsers] = useStateTogether<User[]>("user-list", [
