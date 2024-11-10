@@ -12,16 +12,28 @@
 }
 
 .popup-inner{
-    position: relative;
-    padding: 32px;
+    position: absolute;
+    padding: 16px;
     width: 100%;
     max-width: 640px;
-    background-color: wheat;
+    background-color: rgb(61, 41, 3);
+    color: white;
+    border: 2px solid black;
+    border-radius: 1rem;
 }
 
 .popup-inner .close-btn{
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    
+    position: relative;
+    top: 125px;
+    right: -50px;
+    color: white;
+    background-color: red;
+}
+.popup-inner .create-btn{
+    position: relative;
+    top: 0px;
+    right: 99px;
+    color: white;
+    background-color: green;
+    ;
 }
