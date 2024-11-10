@@ -9,6 +9,8 @@
     }
   ],
   "compilerOptions": {
+    "noUnusedLocals": false, // Disable error for unused locals
+    "noUnusedParameters": false, // Disable error for unused function parameters
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

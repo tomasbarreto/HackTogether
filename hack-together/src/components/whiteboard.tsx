@@ -18,6 +18,8 @@ interface DrawingPoint {
   isEraser: boolean
 }
 
+
+
 interface WhiteboardProps {
   users: User[];
   roomId: string;
@@ -211,14 +213,17 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
       convertPdfToImages(file)
     }
   }
-
   const goToNextPage = () => {
-    setCurrentPageIndex((prevIndex) => (prevIndex + 1) % pdfImageUrls.length)
-  }
-
+    if (currentPageIndex < pdfImageUrls.length - 1) {
+      setCurrentPageIndex(currentPageIndex + 1);
+    }
+  };
+  
   const goToPreviousPage = () => {
-    setCurrentPageIndex((prevIndex) => (prevIndex - 1 + pdfImageUrls.length) % pdfImageUrls.length)
-  }
+    if (currentPageIndex > 0) {
+      setCurrentPageIndex(currentPageIndex - 1);
+    }
+  };
 
   return (
     <>
