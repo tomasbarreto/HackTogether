@@ -56,7 +56,7 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId }) => {
   };
 
   // Force update to re-render without using useState
-  const [, updateState] = useState();
+  const [, updateState] = useState<unknown>();
   const forceUpdate = useCallback(() => updateState({}), []);
 
   const { toast } = useToast()
