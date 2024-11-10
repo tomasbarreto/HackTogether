@@ -3,18 +3,6 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
 export default defineConfig({
-  optimizeDeps: {
-    exclude: ['pdfjs-dist'],
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'pdf.worker': ['pdfjs-dist/build/pdf.worker.entry'],
-        },
-      },
-    },
-  },
   server: {
     host: true,
   },

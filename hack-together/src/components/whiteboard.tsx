@@ -6,7 +6,7 @@ import { Separator } from "../components/ui/separator"
 import { Slider } from "../components/ui/slider"
 import { Eraser, RotateCcw, FileUp, Trash2, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from "../lib/utils"
-import { SidebarProvider } from "./ui/sidebar"
+import { SidebarProvider, SidebarTrigger } from "./ui/sidebar"
 import { AppSidebar } from "../components/AppSidebar"
 import { User } from "../Schemas/Schemas"
 import { UsernameDialog } from "../components/UsernameDialog"
@@ -24,6 +24,7 @@ interface WhiteboardProps {
   users: User[];
   roomId: string;
   username: string;
+  userId: string;
   onUsernameChange: (newUsername: string) => void;
 }
 
@@ -31,10 +32,15 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
   users,
   roomId,
   username,
+  userId,
   onUsernameChange
 }) => {
+  // @ts-ignore
   const [newUsername, setNewUsername] = useState(username);
+  // @ts-ignore
   const [isNameChangeOpen, setIsNameChangeOpen] = useState(true);
+
+  // @ts-ignore
   const [localDrawing, setLocalDrawing, drawingsPerUser] = useStateTogetherWithPerUserValues<DrawingPoint[][]>(`canvas-drawing-${roomId}`, []);
   const [pdfImageUrls, setPdfImageUrls] = useStateTogether<string[]>(`pdf-backgrounds-${roomId}`, []);
   const [currentPageIndex, setCurrentPageIndex] = useStateTogether<number>(`current-page-index-${roomId}`, 0);
@@ -228,7 +234,7 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
   return (
     <>
     <SidebarProvider>
-      <AppSidebar users={users} roomId={roomId} />
+      <AppSidebar users={users} roomId={roomId} currentUserId={userId} />
         <main className="overflow-x-hidden">
           <UsernameDialog
             isOpen={isNameDialogOpen}
@@ -238,6 +244,7 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
           />
     <div className="flex flex-col items-center space-y-4">
       <div className="flex items-center space-x-4">
+        <SidebarTrigger className='flex items-left' />
         <div className="flex items-center space-x-2">
           <Popover>
             <PopoverTrigger asChild>
