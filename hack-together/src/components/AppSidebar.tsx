@@ -9,52 +9,34 @@ import {
     SidebarMenuItem,
     SidebarGroupContent,
     SidebarMenu,
-  } from "../components/ui/sidebar"
-
+  } from "./ui/sidebar"
   import { Role, User } from "../Schemas/Schemas"
-
-  import { ClipboardCopy } from 'lucide-react';
+  import { ClipboardCopy } from 'lucide-react'
+  import { useToast } from "../hooks/use-toast"
   
   interface SidebarProps {
-    users: User[];
+    users: User[]
     roomId: number
   }
-
-  /*const tempUsers : User[] = [
-    {
-        id: 1,
-        username: "Tomas",
-        role: Role.Student
-    },
-    {
-        id: 2,
-        username: "Matos",
-        role: Role.Student
-    },
-    {
-        id: 3,
-        username: "Freitas",
-        role: Role.Student
-    },
-    {
-        id: 4,
-        username: "Gui",
-        role: Role.Student
-    },
-    {
-        id: 5,
-        username: "Tiago",
-        role: Role.Student
-    },
-    {
-        id: 6,
-        username: "Alberto",
-        role: Role.Professor
-    }
-  ]*/
-
+  
   export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId }) => {
-    console.log(users.length)
+    const { toast } = useToast()
+  
+    const handleCopyRoomId = async () => {
+      try {
+        await navigator.clipboard.writeText(roomId.toString())
+        toast({
+          description: "Room ID copied successfully!",
+          duration: 2000,
+        })
+      } catch (error) {
+        toast({
+          description: "Failed to copy Room ID",
+          variant: "destructive",
+        })
+      }
+    }
+  
     return (
       <Sidebar>
         <SidebarHeader />
@@ -62,45 +44,45 @@ import {
           <SidebarGroup>
             <SidebarGroupLabel>Students</SidebarGroupLabel>
             <SidebarGroupContent>
-                <SidebarMenu>
-                    {users.length != 0 ? users.map((user) => (
-                        user.role === Role.Student ? 
-                        <SidebarMenuItem key={user.id}>
-                            <SidebarMenuButton asChild> 
-                                <span key={user.id}>{user.username}</span> 
-                            </SidebarMenuButton> 
-                        </SidebarMenuItem> : null
-                    )) : 
-                        <SidebarMenuItem>
-                            <SidebarMenuButton asChild> 
-                                <span>No students online</span> 
-                            </SidebarMenuButton> 
-                        </SidebarMenuItem>
-                    }
-                </SidebarMenu>
+              <SidebarMenu>
+                {users.length > 0 ? (
+                  users.map((user) =>
+                    user.role === Role.Student ? (
+                      <SidebarMenuItem key={user.id}>
+                        <SidebarMenuButton asChild>
+                          <span>{user.username}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ) : null
+                  )
+                ) : (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <span>No students online</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+              </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-            <SidebarGroup>
-                <SidebarGroupLabel>Rood ID</SidebarGroupLabel>
-                <SidebarGroupContent>
-                    <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton asChild onClick={ async () => {
-                                    await navigator.clipboard.writeText(roomId.toString())
-                                }}> 
-                                    <div className="flex justify-between">
-                                        <span>31231231</span> 
-                                        <ClipboardCopy />
-                                    </div>
-                                </SidebarMenuButton> 
-                            </SidebarMenuItem>
-                    </SidebarMenu>
+          <SidebarGroup>
+            <SidebarGroupLabel>Room ID</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild onClick={handleCopyRoomId}>
+                    <div className="flex items-center justify-between w-full">
+                      <span>{roomId}</span>
+                      <ClipboardCopy className="h-4 w-4" />
+                    </div>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
             </SidebarGroupContent>
-            </SidebarGroup>
+          </SidebarGroup>
         </SidebarFooter>
       </Sidebar>
     )
   }
-  
