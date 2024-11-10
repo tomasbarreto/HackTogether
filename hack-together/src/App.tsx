@@ -1,5 +1,5 @@
 import './App.css';
-import { Whiteboard } from './components/whiteboard';
+import { WhiteboardComponent } from './components/whiteboard';
 import { User, Role } from "./Schemas/Schemas"
 import { useStateTogether } from 'react-together'
 
@@ -13,10 +13,8 @@ function App() {
     { id: 5, username: "Guilherme", role: Role.Student },
   ]);
 
-  setUsers([])
-
   return (
-    <Whiteboard users={users} roomId={312312321312} />
+    <WhiteboardComponent users={users} roomId={312312321312} />
   );
 }
 

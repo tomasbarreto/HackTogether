@@ -13,6 +13,6 @@ createRoot(document.getElementById('root')!).render(
         password: "Pass123!",
       }}
     >
-    <Mainpage />
+    <App />
     </ReactTogether>
 )
