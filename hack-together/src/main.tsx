@@ -3,6 +3,7 @@ import { ReactTogether } from 'react-together'
 import './index.css'
 import App from './App.tsx'
 import Mainpage from './mainpage.tsx'
+import { Toaster } from './components/ui/toaster'
 
 createRoot(document.getElementById('root')!).render(
     <ReactTogether
@@ -14,5 +15,6 @@ createRoot(document.getElementById('root')!).render(
       }}
     >
     <App />
+    <Toaster />
     </ReactTogether>
 )

@@ -15,6 +15,7 @@ function App() {
 
   return (
     <WhiteboardComponent users={users} roomId={312312321312} />
+
   );
 }
 
