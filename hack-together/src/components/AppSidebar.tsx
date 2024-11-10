@@ -15,7 +15,7 @@ import { ClipboardCopy } from 'lucide-react'
 import { useToast } from "../hooks/use-toast"
 import { Button } from "./ui/button"
 
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 
 import { Trash2 } from 'lucide-react';
 
@@ -35,31 +35,48 @@ import { useStateTogether } from "react-together"
 interface SidebarProps {
   users: User[]
   roomId: String
+  currentUserId: string
 }
 
-export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId }) => {
+export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserId }) => {
+
+  useEffect(() => {
+    setQuestion(['']);
+    setAnswers(['']);
+  }, [roomId]);
+
+  const currUser = users.find(user => user.id === currentUserId);
 
   const [answers, setAnswers] = useStateTogether('answers', ['']);
+  const [question, setQuestion] = useStateTogether('question', ['']);
 
-  void answers;
+  const handleAnswerChange = (index: number, value: string) => {
+    const updatedAnswers = [...answers];
+    updatedAnswers[index] = value;
+    setAnswers(updatedAnswers);
+  };
 
-  const answerRefs = useRef(['', '', '']);
+  const handleQuestionChange = ( value: string) => {
+    const updatedQuestion = [...question];
+    updatedQuestion[0] = value;
+    setQuestion(updatedQuestion);
+  };
 
   // Function to add a new answer input reference
   const addAnswerInput = () => {
-    answerRefs.current.push('');
-    forceUpdate();
+    setAnswers([...answers, '']);
   };
 
   // Function to remove a specific answer input reference
   const removeAnswerInput = (index : number) => {
-    answerRefs.current.splice(index, 1);
-    forceUpdate();
+    const updatedAnswers = answers.filter((_, i) => i !== index);
+    setAnswers(updatedAnswers);
   };
 
-  // Force update to re-render without using useState
-  const [, updateState] = useState<unknown>();
-  const forceUpdate = useCallback(() => updateState({}), []);
+  const handlePollSubmission = () => {
+    setQuestion(question);  // Updates shared question
+    setAnswers(answers);    // Updates shared answers
+  };
 
   const { toast } = useToast()
   
@@ -144,109 +161,139 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId }) => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Actions</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                <Dialog>
+      { currUser?.role === Role.Teacher && (
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Actions</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                  <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="w-48">Create Question Pool</Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Create Question Pool</DialogTitle>
+                          <DialogDescription>
+                            Type your question and possible answers. Click save when you're done.
+                          </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-3 items-center gap-4">
+                            <Input
+                              id="question"
+                              className="col-span-3"
+                              placeholder="Question"
+                              onChange={(e) => handleQuestionChange(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Dynamic Answer Inputs */}
+                        {answers.map((_, index) => (
+                          <div key={index} className="grid grid-cols-5 gap-5 py-2 items-center">
+                            <Input
+                              placeholder={`Answer ${index + 1}`}
+                              className="col-span-4"
+                              onChange={(e) => handleAnswerChange(index, e.target.value)}
+                            />
+                            <Button
+                              onClick={() => removeAnswerInput(index)}
+                              className="col-span-1 bg-red-500 text-white"
+                            >
+                              <Trash2 />
+                            </Button>
+                          </div>
+                        ))}
+
+                        {/* Add Answer Button */}
+                        <Button onClick={addAnswerInput} className="mt-2 w-full text-white">
+                          Add Answer
+                        </Button>
+
+                        <DialogFooter>
+                          <DialogTrigger>
+                            <Button type="submit" onClick={ () => {
+                              handlePollSubmission();
+                              }}>Submit</Button>
+                          </DialogTrigger>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>  
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                  <Dialog>
                     <DialogTrigger asChild>
-                      <Button className="w-48">Create Question Pool</Button>
+                      <Button className="w-48">Ask for Doubts</Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                       <DialogHeader>
                         <DialogTitle>Create Question Pool</DialogTitle>
                         <DialogDescription>
-                          Type your question and possible answers. Click save when you're done.
+                          Make changes to your profile here. Click save when you're done.
                         </DialogDescription>
                       </DialogHeader>
-
                       <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-3 items-center gap-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="name" className="text-right">
+                            Name
+                          </Label>
                           <Input
-                            id="question"
+                            id="name"
+                            defaultValue="Pedro Duarte"
                             className="col-span-3"
-                            placeholder="Question"
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="username" className="text-right">
+                            Username
+                          </Label>
+                          <Input
+                            id="username"
+                            defaultValue="@peduarte"
+                            className="col-span-3"
                           />
                         </div>
                       </div>
-
-                      {/* Dynamic Answer Inputs */}
-                      {answerRefs.current.map((_, index) => (
-                        <div key={index} className="grid grid-cols-5 gap-5 py-2 items-center">
-                          <Input
-                            placeholder={`Answer ${index + 1}`}
-                            className="col-span-4"
-                          />
-                          <Button
-                            onClick={() => removeAnswerInput(index)}
-                            className="col-span-1 bg-red-500 text-white"
-                          >
-                            <Trash2 />
-                          </Button>
-                        </div>
-                      ))}
-
-                      {/* Add Answer Button */}
-                      <Button onClick={addAnswerInput} className="mt-2 w-full text-white">
-                        Add Answer
-                      </Button>
-
                       <DialogFooter>
-                        <Button type="submit" onClick={ () => {setAnswers(answerRefs.current)}}>Submit</Button>
+                        <Button type="submit">Save changes</Button>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
-                </SidebarMenuButton>
-              </SidebarMenuItem>  
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="w-48">Ask for Doubts</Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Create Question Pool</DialogTitle>
-                      <DialogDescription>
-                        Make changes to your profile here. Click save when you're done.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">
-                          Name
-                        </Label>
-                        <Input
-                          id="name"
-                          defaultValue="Pedro Duarte"
-                          className="col-span-3"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="username" className="text-right">
-                          Username
-                        </Label>
-                        <Input
-                          id="username"
-                          defaultValue="@peduarte"
-                          className="col-span-3"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button type="submit">Save changes</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-                </SidebarMenuButton>
-              </SidebarMenuItem>  
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>  
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>)}
+        {currUser?.role === Role.Student && question[0] && (
+        <Dialog open={Boolean(question[0])}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Question Poll</DialogTitle>
+              <DialogDescription>
+                {question[0]}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {/* Display all possible answers */}
+            {answers.map((answer, index) => (
+              <div key={index} className="py-2">
+                <span>{answer}</span>
+              </div>
+            ))}
+            
+            <DialogFooter>
+              <Button onClick={() => {/* Submit student's answer logic */}}>Submit Answer</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
       <SidebarFooter>
         <SidebarGroup>
           <SidebarGroupLabel>Room ID</SidebarGroupLabel>

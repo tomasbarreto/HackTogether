@@ -24,6 +24,7 @@ interface WhiteboardProps {
   users: User[];
   roomId: string;
   username: string;
+  userId: string;
   onUsernameChange: (newUsername: string) => void;
 }
 
@@ -31,12 +32,14 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
   users,
   roomId,
   username,
+  userId,
   onUsernameChange
 }) => {
   // @ts-ignore
   const [newUsername, setNewUsername] = useState(username);
   // @ts-ignore
   const [isNameChangeOpen, setIsNameChangeOpen] = useState(true);
+
   // @ts-ignore
   const [localDrawing, setLocalDrawing, drawingsPerUser] = useStateTogetherWithPerUserValues<DrawingPoint[][]>(`canvas-drawing-${roomId}`, []);
   const [pdfImageUrls, setPdfImageUrls] = useStateTogether<string[]>(`pdf-backgrounds-${roomId}`, []);
@@ -231,7 +234,7 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
   return (
     <>
     <SidebarProvider>
-      <AppSidebar users={users} roomId={roomId} />
+      <AppSidebar users={users} roomId={roomId} currentUserId={userId} />
         <main className="overflow-x-hidden">
           <UsernameDialog
             isOpen={isNameDialogOpen}
