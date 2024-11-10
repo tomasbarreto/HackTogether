@@ -3,6 +3,7 @@ import { ReactTogether } from 'react-together';
 import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import RouterSetup from './RouterSetup';
+import { Toaster } from './components/ui/toaster';
 
 const roomId = new URLSearchParams(window.location.search).get('roomId');
 
@@ -18,5 +19,6 @@ createRoot(document.getElementById('root')!).render(
     <Router>
       <RouterSetup />
     </Router>
+    <Toaster />
   </ReactTogether>
 );

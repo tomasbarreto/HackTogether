@@ -6,7 +6,7 @@ import { Separator } from "../components/ui/separator"
 import { Slider } from "../components/ui/slider"
 import { Eraser, RotateCcw, FileUp, Trash2, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from "../lib/utils"
-import { SidebarProvider } from "./ui/sidebar"
+import { SidebarProvider, SidebarTrigger } from "./ui/sidebar"
 import { AppSidebar } from "../components/AppSidebar"
 import { User } from "../Schemas/Schemas"
 import { UsernameDialog } from "../components/UsernameDialog"
@@ -241,6 +241,7 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
           />
     <div className="flex flex-col items-center space-y-4">
       <div className="flex items-center space-x-4">
+        <SidebarTrigger className='flex items-left' />
         <div className="flex items-center space-x-2">
           <Popover>
             <PopoverTrigger asChild>

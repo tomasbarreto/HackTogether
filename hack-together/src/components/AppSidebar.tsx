@@ -95,6 +95,30 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId }) => {
       </SidebarContent>
       </SidebarHeader>
       <SidebarContent>
+      <SidebarGroup>
+          <SidebarGroupLabel>Teacher</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {users.length > 0 ? (
+                users.map((user) =>
+                  user.role === Role.Teacher ? (
+                    <SidebarMenuItem key={user.id}>
+                      <SidebarMenuButton asChild>
+                        <span>{user.username}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ) : null
+                )
+              ) : (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <span>No teachers online</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Students</SidebarGroupLabel>
           <SidebarGroupContent>
