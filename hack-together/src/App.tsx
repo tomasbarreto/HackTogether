@@ -1,9 +1,9 @@
 import './App.css';
-import { WhiteboardComponent } from './components/whiteboard';
+import  Whiteboard  from './components/whiteboard';
 
 function App() {
   return (
-    <WhiteboardComponent />
+    <Whiteboard />
   );
 }
 
