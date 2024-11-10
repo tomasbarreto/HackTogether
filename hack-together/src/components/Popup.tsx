@@ -1,5 +1,5 @@
-import React from 'react';
 import './Popup.css';
+import { useNavigate } from 'react-router-dom';
 
 interface PopupProps {
   trigger: boolean;
@@ -7,19 +7,23 @@ interface PopupProps {
   children: React.ReactNode;
 }
 
-// Declare the Popup component with its props
-// const Popup: FunctionComponent<PopupProps>;
+function Popup({ trigger, setTrigger, children }: PopupProps) {
+  const navigate = useNavigate();
 
-function Popup(props: PopupProps) {
-  return (props.trigger) ? (
-    <div className='popup'>
-        <div className='popup-inner'> 
-            <button className='close-btn' onClick={() => props.setTrigger(false)}>Close</button>
-            {props.children}
-            <button className='create-btn' onClick={() => props.setTrigger(false)}>Create</button>
-        </div>
+  const handleCreateSession = () => {
+    const roomId = Date.now().toString();
+    navigate(`/room/${roomId}?roomId=${roomId}`);
+  };
+
+  return trigger ? (
+    <div className="popup">
+      <div className="popup-inner">
+        {children}
+        <button className="create-btn" onClick={handleCreateSession}>Create</button>
+        <button className="close-btn" onClick={() => setTrigger(false)}>Close</button>
+      </div>
     </div>
-  ) : "";
+  ) : null;
 }
 
-export default Popup
+export default Popup;

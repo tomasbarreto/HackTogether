@@ -6,14 +6,10 @@ import { Separator } from "../components/ui/separator"
 import { Slider } from "../components/ui/slider"
 import { Eraser, RotateCcw, FileUp, Trash2, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from "../lib/utils"
-import { SidebarProvider, SidebarTrigger } from "./ui/sidebar"
+import { SidebarProvider } from "./ui/sidebar"
 import { AppSidebar } from "../components/AppSidebar"
 import { User } from "../Schemas/Schemas"
-
-interface WhiteboardProps {
-  users: User[];
-  roomId: number;
-}
+import { UsernameDialog } from "../components/UsernameDialog"
 
 interface DrawingPoint {
   x: number
@@ -22,22 +18,40 @@ interface DrawingPoint {
   isEraser: boolean
 }
 
-export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }) => {
-  const [localDrawing, setLocalDrawing, drawingsPerUser] = useStateTogetherWithPerUserValues<DrawingPoint[][]>('canvas-drawing', [])
-  const [color, setColor] = useState('#000000')
-  const [isEraser, setIsEraser] = useState(false)
-  const [pdfImageUrls, setPdfImageUrls] = useStateTogether<string[]>('pdf-backgrounds', [])
-  const [currentPageIndex, setCurrentPageIndex] = useStateTogether<number>('current-page-index', 0)
-  const [zoomLevel, setZoomLevel] = useState(50) // Default to middle of the range
+interface WhiteboardProps {
+  users: User[];
+  roomId: string;
+  username: string;
+  onUsernameChange: (newUsername: string) => void;
+}
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null)
-  const isDrawing = useRef(false)
-  const lastUpdateRef = useRef<number>(0)
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
+export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
+  users,
+  roomId,
+  username,
+  onUsernameChange
+}) => {
+  const [newUsername, setNewUsername] = useState(username);
+  const [isNameChangeOpen, setIsNameChangeOpen] = useState(true);
+  const [localDrawing, setLocalDrawing, drawingsPerUser] = useStateTogetherWithPerUserValues<DrawingPoint[][]>(`canvas-drawing-${roomId}`, []);
+  const [pdfImageUrls, setPdfImageUrls] = useStateTogether<string[]>(`pdf-backgrounds-${roomId}`, []);
+  const [currentPageIndex, setCurrentPageIndex] = useStateTogether<number>(`current-page-index-${roomId}`, 0);
+  const [color, setColor] = useState('#000000');
+  const [isEraser, setIsEraser] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(50); // Default zoom level
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  const isDrawing = useRef(false);
+  const lastUpdateRef = useRef<number>(0);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Convert slider value (0-100) to actual zoom (0.25 to 2.0)
-  const actualZoomLevel = (zoomLevel / 50) * 1.125 // This gives us a range of 0.25x to 2.25x
+  const actualZoomLevel = (zoomLevel / 50) * 1.125;
+
+  useEffect(() => {
+    setNewUsername(username);
+  }, [username]);
+
+  const [isNameDialogOpen, setIsNameDialogOpen] = useState(true)  // Set to true to open the dialog immediately
 
   // Rest of the component remains exactly the same until the zoom slider UI
   const convertPdfToImages = async (file: File) => {
@@ -79,63 +93,62 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }
   }
 
   useEffect(() => {
-    const canvas = canvasRef.current
+    const canvas = canvasRef.current;
     if (canvas) {
-      canvas.width = 800
-      canvas.height = 600
-      const context = canvas.getContext('2d')
+      canvas.width = 800;
+      canvas.height = 600;
+      const context = canvas.getContext('2d');
       if (context) {
-        context.lineCap = 'round'
-        context.lineWidth = 3
-        contextRef.current = context
-        renderCanvas()
+        context.lineCap = 'round';
+        context.lineWidth = 3;
+        contextRef.current = context;
+        renderCanvas();
       }
     }
-  }, [currentPageIndex, actualZoomLevel, drawingsPerUser])
+  }, [currentPageIndex, actualZoomLevel, drawingsPerUser]);
 
   const renderCanvas = () => {
-    const context = contextRef.current
-    const canvas = canvasRef.current
+    const context = contextRef.current;
+    const canvas = canvasRef.current;
     if (context && canvas) {
-      context.clearRect(0, 0, canvas.width, canvas.height)
-      
+      context.clearRect(0, 0, canvas.width, canvas.height);
       if (pdfImageUrls.length > 0 && pdfImageUrls[currentPageIndex]) {
-        const background = new Image()
-        background.src = pdfImageUrls[currentPageIndex]
+        const background = new Image();
+        background.src = pdfImageUrls[currentPageIndex];
         background.onload = () => {
-          const scaledWidth = background.width * actualZoomLevel
-          const scaledHeight = background.height * actualZoomLevel
-          const x = (canvas.width - scaledWidth) / 2
-          const y = (canvas.height - scaledHeight) / 2
-          
-          context.drawImage(background, x, y, scaledWidth, scaledHeight)
-          drawUserLines(context)
-        }
+          const scaledWidth = background.width * actualZoomLevel;
+          const scaledHeight = background.height * actualZoomLevel;
+          const x = (canvas.width - scaledWidth) / 2;
+          const y = (canvas.height - scaledHeight) / 2;
+
+          context.drawImage(background, x, y, scaledWidth, scaledHeight);
+          drawUserLines(context);
+        };
       } else {
-        drawUserLines(context)
+        drawUserLines(context);
       }
     }
-  }
+  };
 
   const drawUserLines = (context: CanvasRenderingContext2D) => {
     Object.values(drawingsPerUser || {}).forEach((userLines) => {
       userLines.forEach((line) => {
         if (line.length > 0) {
-          context.beginPath()
-          context.moveTo(line[0].x, line[0].y)
+          context.beginPath();
+          context.moveTo(line[0].x, line[0].y);
           line.forEach((point, index) => {
             if (index > 0) {
-              context.lineTo(point.x, point.y)
+              context.lineTo(point.x, point.y);
             }
-            context.strokeStyle = point.isEraser ? '#f9f9f9' : point.color
-            context.stroke()
-            context.beginPath()
-            context.moveTo(point.x, point.y)
-          })
+            context.strokeStyle = point.isEraser ? '#f9f9f9' : point.color;
+            context.stroke();
+            context.beginPath();
+            context.moveTo(point.x, point.y);
+          });
         }
-      })
-    })
-  }
+      });
+    });
+  };
 
   const startDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
     isDrawing.current = true
@@ -210,9 +223,14 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }
   return (
     <>
     <SidebarProvider>
-        <AppSidebar users={users} roomId={roomId} />
-        <main className='overflow-x-hidden'>
-        <SidebarTrigger className="flex flex-col items-left mb-5" />
+      <AppSidebar users={users} roomId={roomId} />
+        <main className="overflow-x-hidden">
+          <UsernameDialog
+            isOpen={isNameDialogOpen}
+            onClose={() => setIsNameDialogOpen(false)}
+            initialUsername={username}
+            onUsernameChange={onUsernameChange}
+          />
     <div className="flex flex-col items-center space-y-4">
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">

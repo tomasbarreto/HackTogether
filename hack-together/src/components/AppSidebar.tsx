@@ -16,7 +16,7 @@ import { useToast } from "../hooks/use-toast"
 
 interface SidebarProps {
   users: User[]
-  roomId: number
+  roomId: String
 }
 
 export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId }) => {
