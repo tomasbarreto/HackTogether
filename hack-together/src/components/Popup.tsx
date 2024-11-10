@@ -16,8 +16,8 @@ function Popup({ trigger, setTrigger, children }: PopupProps) {
   };
 
   return trigger ? (
-    <div className="popup">
-      <div className="popup-inner">
+    <div className='popup'>
+      <div className='popup-inner'>
         {children}
         <button className="create-btn" onClick={handleCreateSession}>Create</button>
         <button className="close-btn" onClick={() => setTrigger(false)}>Close</button>
