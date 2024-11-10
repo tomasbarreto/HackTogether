@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+/*import React, { useState } from 'react';
 
 function WidgetTab() {
   const [activeTab, setActiveTab] = useState(1);
@@ -95,3 +95,4 @@ function WidgetTab() {
 }
 
 export default WidgetTab;
+*/
