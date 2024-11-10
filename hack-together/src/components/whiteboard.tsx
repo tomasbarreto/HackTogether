@@ -23,6 +23,7 @@ interface DrawingPoint {
 }
 
 export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }) => {
+  // @ts-ignore
   const [localDrawing, setLocalDrawing, drawingsPerUser] = useStateTogetherWithPerUserValues<DrawingPoint[][]>('canvas-drawing', [])
   const [color, setColor] = useState('#000000')
   const [isEraser, setIsEraser] = useState(false)

@@ -4,6 +4,7 @@ import { User, Role } from "./Schemas/Schemas"
 import { useStateTogether } from 'react-together'
 
 function App() {
+  // @ts-ignore
   const [users, setUsers] = useStateTogether<User[]>("user-list", [
     { id: 1, username: "Tomas", role: Role.Student },
     { id: 2, username: "Matos", role: Role.Student },

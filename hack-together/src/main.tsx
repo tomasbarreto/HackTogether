@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client'
 import { ReactTogether } from 'react-together'
 import './index.css'
 import App from './App.tsx'
+// @ts-ignore
 import Mainpage from './mainpage.tsx'
 import { Toaster } from './components/ui/toaster'
 
