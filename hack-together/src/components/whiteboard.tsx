@@ -33,8 +33,11 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
   username,
   onUsernameChange
 }) => {
+  // @ts-ignore
   const [newUsername, setNewUsername] = useState(username);
+  // @ts-ignore
   const [isNameChangeOpen, setIsNameChangeOpen] = useState(true);
+  // @ts-ignore
   const [localDrawing, setLocalDrawing, drawingsPerUser] = useStateTogetherWithPerUserValues<DrawingPoint[][]>(`canvas-drawing-${roomId}`, []);
   const [pdfImageUrls, setPdfImageUrls] = useStateTogether<string[]>(`pdf-backgrounds-${roomId}`, []);
   const [currentPageIndex, setCurrentPageIndex] = useStateTogether<number>(`current-page-index-${roomId}`, 0);
