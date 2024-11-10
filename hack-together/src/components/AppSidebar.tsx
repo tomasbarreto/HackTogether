@@ -41,6 +41,8 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId }) => {
 
   const [answers, setAnswers] = useStateTogether('answers', ['']);
 
+  void answers;
+
   const answerRefs = useRef(['', '', '']);
 
   // Function to add a new answer input reference
@@ -71,6 +73,7 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId }) => {
         duration: 2000,
       })
     } catch (error) {
+      void error;
       toast({
         description: "Failed to copy Room ID",
         variant: "destructive",

@@ -12,6 +12,8 @@ function App() {
     { id: 5, username: "Guilherme", role: Role.Student },
   ]);
 
+  void setUsers;
+
   return (
     <>
       <WhiteboardComponent users={users} roomId={312312321312} />

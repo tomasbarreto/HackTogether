@@ -1,6 +1,6 @@
 import Mpc from './Mpc.tsx'
 import './mainpage.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 function Mainpage() {
     return (
       <div 
