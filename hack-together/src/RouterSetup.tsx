@@ -3,6 +3,7 @@ import SessionManager from './SessionManager';
 import CanvasApp from './CanvasApp';
 import { ReactTogether } from 'react-together';
 import React from 'react';
+import { Toaster } from './components/ui/toaster';
 
 interface RoomSessionWrapperProps {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ function RoomSessionWrapper({ children }: RoomSessionWrapperProps) {
       }}
     >
       {children}
+      <Toaster />
     </ReactTogether>
   );
 }

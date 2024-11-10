@@ -14,12 +14,8 @@ import { Role, User } from "../Schemas/Schemas"
 import { ClipboardCopy } from 'lucide-react'
 import { useToast } from "../hooks/use-toast"
 import { Button } from "./ui/button"
-import { Input } from "./ui/input"
 import { useEffect, useState } from "react"
 import { Trash2 } from 'lucide-react';
-import { Progress } from "../components/ui/progress"
-import { Label } from "../components/ui/label"
-
 import {
   Dialog,
   DialogContent,
@@ -28,37 +24,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../components/ui/dialog";
-
-import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
-
+} from "../components/ui/dialog"
+import { Input } from "../components/ui/input"
+import { Label } from "../components/ui/label"
 import { useStateTogether } from "react-together"
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
+import QRCode from 'react-qr-code'
 
 interface SidebarProps {
   users: User[]
-  roomId: string
+  roomId: String
   currentUserId: string
 }
 
 export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserId }) => {
 
-  const [progress, setProgress] = useState(0);  // Initialize progress state
-
-  useEffect(() => {
-    // Set an interval to increment the progress every 300ms
-    const interval = setInterval(() => {
-      setProgress(prevProgress => {
-        if (prevProgress >= 100) {
-          clearInterval(interval);  // Clear the interval when it reaches 100
-          return 100;
-        }
-        return prevProgress + 1;  // Increment progress
-      });
-    }, 300);  // Set the interval to 300ms for smoother progress (adjust as needed)
-
-    // Cleanup function to clear the interval when the component unmounts
-    return () => clearInterval(interval);
-  }, []); 
+  const [isQrDialogOpen, setIsQrDialogOpen] = useState(false); // State for QR code dialog
+  const roomUrl = `https://hack-together.vercel.app/room/${roomId}`;
 
   useEffect(() => {
     setQuestion(['']);
@@ -86,13 +68,14 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
           <>
             <div className="flex flex-col">
               <div className="flex flex-row">
-                <Button className="bg-green-900">Yes</Button>
+                <Button className="bg-green-900" onClick={ () =>{}
+                  
+                }>Yes</Button>
               </div>
-              <Progress value={progress} className="w-[150%]" />
             </div>
           </>
         ),
-        duration: 30000
+        duration: 15000
       });
       // Reset state after displaying toast
       setShowDoubtsToast(false);
@@ -134,35 +117,33 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
 
   const handleCopyRoomId = async () => {
     try {
-      await navigator.clipboard.writeText(roomId);
+      await navigator.clipboard.writeText(roomId.toString())
       toast({
         description: "Room ID copied successfully!",
         duration: 2000,
-      });
+      })
     } catch (error) {
+      void error;
       toast({
         description: "Failed to copy Room ID",
         variant: "destructive",
-      });
+      })
     }
-  };
-
-  const roomUrl = `https://hack-together.vercel.app/room/${roomId}`;
+  }
 
   return (
     <Sidebar>
       <SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenuItem className="flex items-left ml-6">
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenuItem className="flex items-left ml-6">
                 <span className="font-black text-xl">LEARN TOGETHER.</span>
-              </SidebarMenuItem>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
+            </SidebarMenuItem>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
       </SidebarHeader>
-
       <SidebarContent>
       <SidebarGroup>
           <SidebarGroupLabel>Teacher</SidebarGroupLabel>
@@ -195,7 +176,7 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
               {users.length > 0 ? (
                 users.map((user) =>
                   user.role === Role.Student ? (
-                    <SidebarMenuItem key={user.id}>
+                    <SidebarMenuItem key={"stundent" + user.id} id={"stundent" + user.id}>
                       <SidebarMenuButton asChild>
                         <span>{user.username}</span>
                       </SidebarMenuButton>
@@ -323,17 +304,45 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild onClick={handleCopyRoomId} className="cursor-pointer">
-                  <div className="flex items-center justify-between w-full">
-                    <span>{roomId}</span>
-                    <ClipboardCopy className="h-4 w-4" />
-                  </div>
-                </SidebarMenuButton>
+                <div className="flex items-center space-x-2">
+                  <SidebarMenuButton asChild onClick={handleCopyRoomId} className="cursor-pointer">
+                    <div className="flex items-center justify-between w-full">
+                      <span>{roomId}</span>
+                      <ClipboardCopy className="h-4 w-4" />
+                    </div>
+                  </SidebarMenuButton>
+
+                  {/* QR Code Dialog Trigger */}
+                  <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="icon" variant="outline" onClick={() => setIsQrDialogOpen(true)}>QR</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Scan to Join Room</DialogTitle>
+                        <DialogDescription>Share this QR code to join the room:</DialogDescription>
+                      </DialogHeader>
+                      <div className="flex justify-center my-4" style={{ background: 'white', padding: '16px' }}>
+                        <QRCode
+                          value={`https://hack-together.vercel.app/room/${roomId}`}
+                          size={256}
+                          bgColor="#FFFFFF"
+                          fgColor="#000000"
+                          level="L"
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button onClick={() => setIsQrDialogOpen(false)}>Close</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarFooter>
+
     </Sidebar>
-  );
-};
+  )
+}
