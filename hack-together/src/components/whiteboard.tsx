@@ -22,6 +22,8 @@ interface DrawingPoint {
   isEraser: boolean
 }
 
+
+
 export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }) => {
   // @ts-ignore
   const [localDrawing, setLocalDrawing, drawingsPerUser] = useStateTogetherWithPerUserValues<DrawingPoint[][]>('canvas-drawing', [])
@@ -112,6 +114,10 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }
           context.drawImage(background, x, y, scaledWidth, scaledHeight)
           drawUserLines(context)
         }
+        background.onerror = (e) => {
+          console.error('Failed to load PDF image:', e);
+          // Optionally, show a notification to the user
+        };
       } else {
         drawUserLines(context)
       }
@@ -199,14 +205,17 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }
       convertPdfToImages(file)
     }
   }
-
   const goToNextPage = () => {
-    setCurrentPageIndex((prevIndex) => (prevIndex + 1) % pdfImageUrls.length)
-  }
-
+    if (currentPageIndex < pdfImageUrls.length - 1) {
+      setCurrentPageIndex(currentPageIndex + 1);
+    }
+  };
+  
   const goToPreviousPage = () => {
-    setCurrentPageIndex((prevIndex) => (prevIndex - 1 + pdfImageUrls.length) % pdfImageUrls.length)
-  }
+    if (currentPageIndex > 0) {
+      setCurrentPageIndex(currentPageIndex - 1);
+    }
+  };
 
   return (
     <>
