@@ -39,6 +39,9 @@ interface SidebarProps {
 
 export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserId }) => {
 
+  const [isQrDialogOpen, setIsQrDialogOpen] = useState(false); // State for QR code dialog
+  const roomUrl = `https://hack-together.vercel.app/room/${roomId}`;
+
   const [highlightedUser, setHighlightedUsers] = useStateTogether("highlight", [''])
 
   const handleHighlightedChange = (index: number, value: string) => {
