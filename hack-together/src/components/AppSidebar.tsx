@@ -15,11 +15,10 @@ import { ClipboardCopy } from 'lucide-react'
 import { useToast } from "../hooks/use-toast"
 import { Button } from "./ui/button"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 import { Trash2 } from 'lucide-react';
 
-import { Progress } from "../components/ui/progress"
 
 import {
   Dialog,
@@ -44,23 +43,18 @@ interface SidebarProps {
 
 export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserId }) => {
 
-  const [progress, setProgress] = useState(0);  // Initialize progress state
+  const [highlightedUser, setHighlightedUsers] = useStateTogether("highlight", [''])
+
+  const handleHighlightedChange = (index: number, value: string) => {
+    const updatedHighlights = [...answers];
+    updatedHighlights[index] = value;
+    setHighlightedUsers(updatedHighlights);
+  };
 
   useEffect(() => {
-    // Set an interval to increment the progress every 300ms
-    const interval = setInterval(() => {
-      setProgress(prevProgress => {
-        if (prevProgress >= 100) {
-          clearInterval(interval);  // Clear the interval when it reaches 100
-          return 100;
-        }
-        return prevProgress + 1;  // Increment progress
-      });
-    }, 300);  // Set the interval to 300ms for smoother progress (adjust as needed)
-
-    // Cleanup function to clear the interval when the component unmounts
-    return () => clearInterval(interval);
-  }, []); 
+    // Set initial state or reset on room change
+    setHighlightedUsers(['']); 
+  }, [roomId]);
 
   useEffect(() => {
     setQuestion(['']);
@@ -88,13 +82,12 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
           <>
             <div className="flex flex-col">
               <div className="flex flex-row">
-                <Button className="bg-green-900">Yes</Button>
+                <Button className="bg-green-900" onClick={() => {handleHighlightedChange}}>Yes</Button>
               </div>
-              <Progress value={progress} className="w-[150%]" />
             </div>
           </>
         ),
-        duration: 30000
+        duration: 15000
       });
       // Reset state after displaying toast
       setShowDoubtsToast(false);
@@ -195,8 +188,27 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
               {users.length > 0 ? (
                 users.map((user) =>
                   user.role === Role.Student ? (
-                    <SidebarMenuItem key={user.id}>
-                      <SidebarMenuButton asChild>
+                    highlightedUser.find(u => u === user.id) ?
+                      <SidebarMenuItem key={"student" + user.id}>
+                        <SidebarMenuButton asChild className="bg-red-100" id={"student" + user.id} onClick={ () => {
+                            const element = document.getElementById("student" + user.id);
+
+                            var color :string = ""
+
+                            if (element) {
+                              color = element.style.backgroundColor
+                            }
+
+                            if (element && currUser?.role === Role.Teacher && color === "#f26262") {
+                              element.style.backgroundColor = "FFFFFF";
+                            }
+                          }
+                        }>
+                          <span>{user.username}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem> :
+                      <SidebarMenuItem key={"student" + user.id}>
+                      <SidebarMenuButton asChild id={"student" + user.id}>
                         <span>{user.username}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -281,7 +293,7 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
                   <SidebarMenuButton asChild>
                       <Button className="w-48" onClick={handleAskForDoubts}>
                         Ask for Doubts
-                        </Button>
+                      </Button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>  
               </SidebarMenu>
