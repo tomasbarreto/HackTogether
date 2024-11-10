@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')!).render(
       sessionParams={{
         appId: "dev.reacttogether.hacktogetherapp",
         apiKey: "2F0ycxv7oTQKzT9TFUcIgydcSdMacginczP0KSlc7o",
-        name: "hacktogethersession2",
+        name: "hacktogethersession3",
         password: "Pass123!",
       }}
     >

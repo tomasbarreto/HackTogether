@@ -211,7 +211,7 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }
     <>
     <SidebarProvider>
         <AppSidebar users={users} roomId={roomId} />
-        <main>
+        <main className='overflow-x-hidden'>
         <SidebarTrigger className="flex flex-col items-left mb-5" />
     <div className="flex flex-col items-center space-y-4">
       <div className="flex items-center space-x-4">
