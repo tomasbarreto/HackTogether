@@ -15,7 +15,7 @@ import { ClipboardCopy } from 'lucide-react'
 import { useToast } from "../hooks/use-toast"
 import { Button } from "./ui/button"
 
-import { useState, useRef, useCallback, useEffect } from "react"
+import { useEffect } from "react"
 
 import { Trash2 } from 'lucide-react';
 
