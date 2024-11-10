@@ -361,7 +361,6 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
           />
         </div>
       </div>
-
       {pdfImageUrls.length > 1 && (
         <div className="flex items-center space-x-4 mt-4">
           <Button variant="outline" size="icon" onClick={goToPreviousPage}>
