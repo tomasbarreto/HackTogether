@@ -1,6 +1,7 @@
 import Popup from "./components/Popup.tsx"; 
 import "./Mpc.css"
 import { useState} from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid'; // Import uuidv4
 import { useNavigate } from 'react-router-dom';
 
@@ -12,8 +13,6 @@ function Mpc() {
       const roomId = uuidv4(); // Generate a unique room ID
       navigate(`/room/${roomId}`); // Navigate to the new page with the room ID
     };
-
-    void handleButtonClick;
     
     return (
         <div className="mainpage">

@@ -24,9 +24,6 @@ interface DrawingPoint {
 
 export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }) => {
   const [localDrawing, setLocalDrawing, drawingsPerUser] = useStateTogetherWithPerUserValues<DrawingPoint[][]>('canvas-drawing', [])
-
-  void localDrawing;
-
   const [color, setColor] = useState('#000000')
   const [isEraser, setIsEraser] = useState(false)
   const [pdfImageUrls, setPdfImageUrls] = useStateTogether<string[]>('pdf-backgrounds', [])
@@ -66,7 +63,7 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({ users, roomId }
     })
     const data = await response.json()
     if (data.Files && data.Files.length > 0) {
-      const imageUrls = data.Files.map((file : any) => file.Url)
+      const imageUrls = data.Files.map((file: any) => file.Url)
       setPdfImageUrls(imageUrls)
       setCurrentPageIndex(0)
     }
