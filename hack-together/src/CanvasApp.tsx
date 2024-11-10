@@ -1,3 +1,4 @@
+// @ts-ignore
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStateTogether } from 'react-together';
@@ -52,3 +53,4 @@ function CanvasApp() {
 }
 
 export default CanvasApp;
+
