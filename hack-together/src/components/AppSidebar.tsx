@@ -14,12 +14,8 @@ import { Role, User } from "../Schemas/Schemas"
 import { ClipboardCopy } from 'lucide-react'
 import { useToast } from "../hooks/use-toast"
 import { Button } from "./ui/button"
-
-import { useEffect } from "react"
-
+import { useEffect, useState } from "react"
 import { Trash2 } from 'lucide-react';
-
-
 import {
   Dialog,
   DialogContent,
@@ -32,8 +28,8 @@ import {
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { useStateTogether } from "react-together"
-
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
+import QRCode from 'react-qr-code'
 
 interface SidebarProps {
   users: User[]
@@ -335,17 +331,45 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild onClick={handleCopyRoomId} className="cursor-pointer">
-                  <div className="flex items-center justify-between w-full">
-                    <span>{roomId}</span>
-                    <ClipboardCopy className="h-4 w-4" />
-                  </div>
-                </SidebarMenuButton>
+                <div className="flex items-center space-x-2">
+                  <SidebarMenuButton asChild onClick={handleCopyRoomId} className="cursor-pointer">
+                    <div className="flex items-center justify-between w-full">
+                      <span>{roomId}</span>
+                      <ClipboardCopy className="h-4 w-4" />
+                    </div>
+                  </SidebarMenuButton>
+
+                  {/* QR Code Dialog Trigger */}
+                  <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="icon" variant="outline" onClick={() => setIsQrDialogOpen(true)}>QR</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Scan to Join Room</DialogTitle>
+                        <DialogDescription>Share this QR code to join the room:</DialogDescription>
+                      </DialogHeader>
+                      <div className="flex justify-center my-4" style={{ background: 'white', padding: '16px' }}>
+                        <QRCode
+                          value={`https://hack-together.vercel.app/room/${roomId}`}
+                          size={256}
+                          bgColor="#FFFFFF"
+                          fgColor="#000000"
+                          level="L"
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button onClick={() => setIsQrDialogOpen(false)}>Close</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarFooter>
+
     </Sidebar>
   )
 }

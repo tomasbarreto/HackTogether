@@ -18,8 +18,6 @@ interface DrawingPoint {
   isEraser: boolean
 }
 
-
-
 interface WhiteboardProps {
   users: User[];
   roomId: string;
@@ -219,172 +217,178 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
       convertPdfToImages(file)
     }
   }
+
   const goToNextPage = () => {
-    if (currentPageIndex < pdfImageUrls.length - 1) {
-      setCurrentPageIndex(currentPageIndex + 1);
-    }
-  };
-  
+    setCurrentPageIndex((prevIndex) => (prevIndex + 1) % pdfImageUrls.length)
+  }
+
   const goToPreviousPage = () => {
-    if (currentPageIndex > 0) {
-      setCurrentPageIndex(currentPageIndex - 1);
-    }
-  };
+    setCurrentPageIndex((prevIndex) => (prevIndex - 1 + pdfImageUrls.length) % pdfImageUrls.length)
+  }
 
   return (
     <>
     <SidebarProvider>
-      <AppSidebar users={users} roomId={roomId} currentUserId={userId} />
-        <main className="overflow-x-hidden">
+      <div className="flex">
+        {/* Sidebar and Sidebar Trigger */}
+        <div className="relative">
+          <SidebarTrigger className="absolute -right-10 top-4" /> {/* Adjusted to be near the sidebar */}
+          <AppSidebar users={users} roomId={roomId} currentUserId={userId} />
+        </div>
+
+        {/* Main Canvas Content */}
+        <main className="overflow-x-hidden flex-grow">
           <UsernameDialog
             isOpen={isNameDialogOpen}
             onClose={() => setIsNameDialogOpen(false)}
             initialUsername={username}
             onUsernameChange={onUsernameChange}
           />
-    <div className="flex flex-col items-center space-y-4">
-      <div className="flex items-center space-x-4">
-        <SidebarTrigger className='flex items-left' />
-        <div className="flex items-center space-x-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn("w-[80px] h-[40px] border-2", isEraser && "opacity-50")}
-                style={{ backgroundColor: color }}
-                disabled={isEraser}
-              />
-            </PopoverTrigger>
-            <PopoverContent className="w-[280px]">
-              <div className="flex flex-wrap gap-1">
-                {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'].map((presetColor) => (
-                  <div
-                    key={presetColor}
-                    className="w-8 h-8 rounded-md cursor-pointer border border-gray-300"
-                    style={{ backgroundColor: presetColor }}
-                    onClick={() => handleColorChange(presetColor)}
-                  />
-                ))}
+          <div className="flex flex-col items-center space-y-4">
+            {/* Canvas Toolbar */}
+            <div className="flex items-center space-x-4">
+              {/* Remaining canvas tools (color picker, eraser, clear, etc.) */}
+              <div className="flex items-center space-x-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn("w-[80px] h-[40px] border-2", isEraser && "opacity-50")}
+                      style={{ backgroundColor: color }}
+                      disabled={isEraser}
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[280px]">
+                    <div className="flex flex-wrap gap-1">
+                      {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'].map((presetColor) => (
+                        <div
+                          key={presetColor}
+                          className="w-8 h-8 rounded-md cursor-pointer border border-gray-300"
+                          style={{ backgroundColor: presetColor }}
+                          onClick={() => handleColorChange(presetColor)}
+                        />
+                      ))}
+                    </div>
+                    <Separator className="my-2" />
+                    <input
+                      type="color"
+                      value={color}
+                      onChange={(e) => handleColorChange(e.target.value)}
+                      className="w-full h-10"
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <Button
+                  variant={isEraser ? "secondary" : "outline"}
+                  size="icon"
+                  onClick={toggleEraser}
+                  className={cn(isEraser && "bg-gray-200")}
+                >
+                  <Eraser className="h-4 w-4" />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={clearLocalDrawings}
+                  title="Clear drawings"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
               </div>
-              <Separator className="my-2" />
-              <input
-                type="color"
-                value={color}
-                onChange={(e) => handleColorChange(e.target.value)}
-                className="w-full h-10"
-              />
-            </PopoverContent>
-          </Popover>
 
-          <Button
-            variant={isEraser ? "secondary" : "outline"}
-            size="icon"
-            onClick={toggleEraser}
-            className={cn(isEraser && "bg-gray-200")}
-          >
-            <Eraser className="h-4 w-4" />
-          </Button>
+              <Separator orientation="vertical" className="h-8" />
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={clearLocalDrawings}
-            title="Clear drawings"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-        </div>
+              <div className="flex items-center space-x-2">
+                {pdfImageUrls.length > 0 ? (
+                  <Button 
+                    variant="destructive" 
+                    size="icon" 
+                    onClick={clearPdfBackground}
+                    className="hover:bg-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    className="flex items-center space-x-2"
+                    onClick={handleUploadClick}
+                  >
+                    <FileUp className="h-4 w-4" />
+                    <span>Upload PDF</span>
+                  </Button>
+                )}
+                
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePdfUpload}
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                />
+              </div>
 
-        <Separator orientation="vertical" className="h-8" />
+              <Separator orientation="vertical" className="h-8" />
 
-        <div className="flex items-center space-x-2">
-          {pdfImageUrls.length > 0 ? (
-            <Button 
-              variant="destructive" 
-              size="icon" 
-              onClick={clearPdfBackground}
-              className="hover:bg-red-600"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          ) : (
-            <Button 
-              variant="outline" 
-              className="flex items-center space-x-2"
-              onClick={handleUploadClick}
-            >
-              <FileUp className="h-4 w-4" />
-              <span>Upload PDF</span>
-            </Button>
-          )}
-          
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={handlePdfUpload}
-            ref={fileInputRef}
-            style={{ display: 'none' }}
-          />
-        </div>
+              <div className="flex items-center space-x-2">
+                <Search className="h-4 w-4 text-gray-500" />
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-500">
+                    {Math.round(actualZoomLevel * 100)}%
+                  </span>
+                  <Slider
+                    value={[zoomLevel]}
+                    onValueChange={(value) => setZoomLevel(value[0])}
+                    min={0}
+                    max={100}
+                    step={1}
+                    className="w-[100px]"
+                  />
+                </div>
+              </div>
+            </div>
 
-        <Separator orientation="vertical" className="h-8" />
-
-        <div className="flex items-center space-x-2">
-          <Search className="h-4 w-4 text-gray-500" />
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-500">
-              {Math.round(actualZoomLevel * 100)}%
-            </span>
-            <Slider
-              value={[zoomLevel]}
-              onValueChange={(value) => setZoomLevel(value[0])}
-              min={0}
-              max={100}
-              step={1}
-              className="w-[100px]"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-center items-center overflow-hidden" style={{ width: "80vw", height: "80vh" }}>
-        <div className="relative">
-          <canvas
-            ref={canvasRef}
-            style={{
-              resize: "both",
-              overflow: "auto",
-              minWidth: "400px",
-              minHeight: "300px",
-            }}
-            onMouseDown={startDrawing}
-            onMouseMove={draw}
-            onMouseUp={stopDrawing}
-            onMouseLeave={stopDrawing}
-            className={cn(
-              "border border-gray-300 bg-white rounded-lg shadow-md",
-              isEraser ? "cursor-cell" : "cursor-crosshair"
+            <div className="flex justify-center items-center overflow-hidden" style={{ width: "80vw", height: "80vh" }}>
+              <div className="relative">
+                <canvas
+                  ref={canvasRef}
+                  style={{
+                    resize: "both",
+                    overflow: "auto",
+                    minWidth: "400px",
+                    minHeight: "300px",
+                  }}
+                  onMouseDown={startDrawing}
+                  onMouseMove={draw}
+                  onMouseUp={stopDrawing}
+                  onMouseLeave={stopDrawing}
+                  className={cn(
+                    "border border-gray-300 bg-white rounded-lg shadow-md",
+                    isEraser ? "cursor-cell" : "cursor-crosshair"
+                  )}
+                />
+              </div>
+            </div>
+            {pdfImageUrls.length > 1 && (
+              <div className="flex items-center space-x-4 mt-4">
+                <Button variant="outline" size="icon" onClick={goToPreviousPage}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm font-medium">
+                  Page {currentPageIndex + 1} of {pdfImageUrls.length}
+                </span>
+                <Button variant="outline" size="icon" onClick={goToNextPage}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             )}
-          />
-        </div>
+          </div>
+        </main>
       </div>
-      {pdfImageUrls.length > 1 && (
-        <div className="flex items-center space-x-4 mt-4">
-          <Button variant="outline" size="icon" onClick={goToPreviousPage}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <span className="text-sm font-medium">
-            Page {currentPageIndex + 1} of {pdfImageUrls.length}
-          </span>
-          <Button variant="outline" size="icon" onClick={goToNextPage}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
-    </div>
-    </main>
-    
     </SidebarProvider>
+
     </>
   )
 }
