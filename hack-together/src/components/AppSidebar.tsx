@@ -39,6 +39,8 @@ interface SidebarProps {
 
 export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserId }) => {
 
+  const [isDialogOpen, setIsDialogOpen] = useStateTogether("polls", false);
+
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false); // State for QR code dialog
 
   const [highlightedUser, setHighlightedUsers] = useStateTogether("highlight", [''])
@@ -280,6 +282,7 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
                           <DialogTrigger>
                             <Button type="submit" onClick={ () => {
                               handlePollSubmission();
+                              setIsDialogOpen(true);
                               }}>Submit</Button>
                           </DialogTrigger>
                         </DialogFooter>
@@ -299,7 +302,7 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
           </SidebarGroup>
         </SidebarContent>)}
         {currUser?.role === Role.Student && question[0] && (
-        <Dialog open={Boolean(question[0])}>
+        <Dialog open={isDialogOpen}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Question Poll</DialogTitle>
@@ -322,7 +325,7 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
               </div>
             
             <DialogFooter>
-              <Button onClick={() => {/* Submit student's answer logic */}}>Submit Answer</Button>
+              <Button onClick={() => {setIsDialogOpen(false)}}>Submit Answer</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
