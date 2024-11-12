@@ -87,6 +87,8 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
                   const newUsers = [...updatedUsers]
                   setUsers(newUsers);
                   setShowDoubtsToast(false);
+                  console.log(users)
+                  
                   }}>Yes</Button>
               </div>
             </div>
