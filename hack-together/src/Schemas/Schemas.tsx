@@ -3,6 +3,7 @@ export interface User {
     id: string;
     username: string;
     role: Role;
+    hasDoubt: boolean;
   }
   
   export enum Role {

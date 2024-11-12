@@ -31,25 +31,22 @@ import { useStateTogether } from "react-together"
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
 import QRCode from 'react-qr-code'
 
+import { Badge } from "../components/ui/badge"
+
 interface SidebarProps {
   users: User[]
   roomId: String
   currentUserId: string
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>
 }
 
-export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserId }) => {
+export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserId, setUsers }) => {
 
   const [isDialogOpen, setIsDialogOpen] = useStateTogether("polls", false);
 
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false); // State for QR code dialog
 
   const [highlightedUser, setHighlightedUsers] = useStateTogether("highlight", [''])
-
-  const handleHighlightedChange = (index: number, value: string) => {
-    const updatedHighlights = [...answers];
-    updatedHighlights[index] = value;
-    setHighlightedUsers(updatedHighlights);
-  };
 
   useEffect(() => {
     // Set initial state or reset on room change
@@ -74,7 +71,6 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
   const { toast } = useToast()
 
   useEffect(() => {
-    // Only show toast if current user is a student and `showDoubtsToast` is true
     if (currUser?.role === Role.Student && showDoubtsToast) {
       toast({
         description: "Any Doubts?",
@@ -82,14 +78,22 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
           <>
             <div className="flex flex-col">
               <div className="flex flex-row">
-                <Button className="bg-green-900" onClick={() => {handleHighlightedChange}}>Yes</Button>
+                <Button className="bg-green-900" onClick={() => {
+                  const updatedUsers = users.map(user => 
+                    user.id === currentUserId 
+                      ? { ...user, hasDoubt: true } 
+                      : user
+                  );
+                  const newUsers = [...updatedUsers]
+                  setUsers(newUsers);
+                  setShowDoubtsToast(false);
+                  }}>Yes</Button>
               </div>
             </div>
           </>
         ),
         duration: 15000
       });
-      // Reset state after displaying toast
       setShowDoubtsToast(false);
     }
   }, [showDoubtsToast, currUser, toast, setShowDoubtsToast]);
@@ -190,21 +194,9 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
                   user.role === Role.Student ? (
                     highlightedUser.find(u => u === user.id) ?
                       <SidebarMenuItem key={"student" + user.id}>
-                        <SidebarMenuButton asChild className="bg-red-100" id={"student" + user.id} onClick={ () => {
-                            const element = document.getElementById("student" + user.id);
-
-                            var color :string = ""
-
-                            if (element) {
-                              color = element.style.backgroundColor
-                            }
-
-                            if (element && currUser?.role === Role.Teacher && color === "#f26262") {
-                              element.style.backgroundColor = "FFFFFF";
-                            }
-                          }
-                        }>
+                        <SidebarMenuButton asChild className="bg-red-100" id={"student" + user.id}>
                           <span>{user.username}</span>
+                          {user.hasDoubt === true ? <Badge>Doubt</Badge> : null}
                         </SidebarMenuButton>
                       </SidebarMenuItem> :
                       <SidebarMenuItem key={"student" + user.id}>
@@ -293,7 +285,7 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                       <Button className="w-48" onClick={handleAskForDoubts}>
-                        Ask for Doubts
+                        Any Doubts
                       </Button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>  

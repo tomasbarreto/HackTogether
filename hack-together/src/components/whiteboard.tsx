@@ -24,6 +24,7 @@ interface WhiteboardProps {
   username: string;
   userId: string;
   onUsernameChange: (newUsername: string) => void;
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
 }
 
 export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
@@ -31,7 +32,8 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
   roomId,
   username,
   userId,
-  onUsernameChange
+  onUsernameChange,
+  setUsers
 }) => {
   // @ts-ignore
   const [newUsername, setNewUsername] = useState(username);
@@ -233,7 +235,7 @@ export const WhiteboardComponent: React.FC<WhiteboardProps> = ({
         {/* Sidebar and Sidebar Trigger */}
         <div className="relative">
           <SidebarTrigger className="absolute -right-10 top-4" /> {/* Adjusted to be near the sidebar */}
-          <AppSidebar users={users} roomId={roomId} currentUserId={userId} />
+          <AppSidebar users={users} roomId={roomId} currentUserId={userId} setUsers={setUsers} />
         </div>
 
         {/* Main Canvas Content */}

@@ -48,7 +48,9 @@ function CanvasApp() {
         users={users}
         userId={userId}
         username={username}
-        onUsernameChange={updateUsername}       />
+        onUsernameChange={updateUsername}       
+        setUsers={setUsers}
+        />
     </div>
   );
 }
