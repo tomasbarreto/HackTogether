@@ -27,7 +27,7 @@ function CanvasApp() {
       }
       return [
         ...prevUsers,
-        { id: userId, username: randomUsername, role: userRole },
+        { id: userId, username: randomUsername, role: userRole, hasDoubt: false },
       ];
     });
   }, [userId, setUsers, users.length]);
