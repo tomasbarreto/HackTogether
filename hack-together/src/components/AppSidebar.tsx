@@ -46,19 +46,14 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
 
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false); // State for QR code dialog
 
-  const [highlightedUser, setHighlightedUsers] = useStateTogether("highlight", [''])
-
-  useEffect(() => {
-    // Set initial state or reset on room change
-    setHighlightedUsers(['']); 
-  }, [roomId]);
-
   useEffect(() => {
     setQuestion(['']);
     setAnswers(['']);
   }, [roomId]);
 
   const [showDoubtsToast, setShowDoubtsToast] = useStateTogether('showDoubtsToast', false);
+
+  const [isToastOpen, setIsToastOpen] = useState(true);
 
   const handleAskForDoubts = () => {
     // Only trigger for students
@@ -71,35 +66,28 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
   const { toast } = useToast()
 
   useEffect(() => {
-    if (currUser?.role === Role.Student && showDoubtsToast) {
+    if (currUser?.role === Role.Student && showDoubtsToast && isToastOpen) {
       toast({
         description: "Any Doubts?",
         action: (
-          <>
-            <div className="flex flex-col">
-              <div className="flex flex-row">
-                <Button className="bg-green-900" onClick={() => {
-                  const updatedUsers = users.map(user => 
-                    user.id === currentUserId 
-                      ? { ...user, hasDoubt: true } 
-                      : user
-                  );
-                  const newUsers = [...updatedUsers]
-                  setUsers(newUsers);
-                  setShowDoubtsToast(false);
-                  console.log(users)
-                  
-                  }}>Yes</Button>
-              </div>
-            </div>
-          </>
+          <Button
+            className="bg-green-900"
+            onClick={() => {
+              const updatedUsers = users.map(user =>
+                user.id === currentUserId ? { ...user, hasDoubt: true } : user
+              );
+              setUsers(updatedUsers);
+              setIsToastOpen(false);
+            }}
+          >
+            Yes
+          </Button>
         ),
-        duration: 15000
+        duration: 15000,
       });
-      setShowDoubtsToast(false);
     }
-  }, [showDoubtsToast, currUser, toast, setShowDoubtsToast]);
-
+  }, [showDoubtsToast, currUser, toast, setShowDoubtsToast, isToastOpen, setIsToastOpen]);  
+  
   const [answers, setAnswers] = useStateTogether('answers', ['']);
   const [question, setQuestion] = useStateTogether('question', ['']);
 
@@ -194,16 +182,12 @@ export const AppSidebar: React.FC<SidebarProps> = ({ users, roomId, currentUserI
               {users.length > 0 ? (
                 users.map((user) =>
                   user.role === Role.Student ? (
-                    highlightedUser.find(u => u === user.id) ?
-                      <SidebarMenuItem key={"student" + user.id}>
-                        <SidebarMenuButton asChild className="bg-red-100" id={"student" + user.id}>
+                    <SidebarMenuItem key={"student" + user.id}>
+                      <SidebarMenuButton asChild className="bg-red-100" id={"student" + user.id}>
+                        <>
                           <span>{user.username}</span>
                           {user.hasDoubt === true ? <Badge>Doubt</Badge> : null}
-                        </SidebarMenuButton>
-                      </SidebarMenuItem> :
-                      <SidebarMenuItem key={"student" + user.id}>
-                      <SidebarMenuButton asChild id={"student" + user.id}>
-                        <span>{user.username}</span>
+                        </>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ) : null
